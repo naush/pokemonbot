@@ -14,11 +14,6 @@ def handle_command(user_name, command, channel):
                           text=whois.respond(user_name, command), as_user=True)
 
 def parse_slack_output(slack_rtm_output):
-    """
-        The Slack Real Time Messaging API is an events firehose.
-        this parsing function returns None unless a message is
-        directed at the Bot, based on its ID.
-    """
     output_list = slack_rtm_output
     if output_list and len(output_list) > 0:
         for output in output_list:
@@ -28,7 +23,7 @@ def parse_slack_output(slack_rtm_output):
     return None, None, None
 
 if __name__ == "__main__":
-    READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
+    READ_WEBSOCKET_DELAY = 1
     if slack_client.rtm_connect():
         api_call = slack_client.api_call("users.list")
         if api_call.get('ok'):
