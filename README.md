@@ -13,7 +13,7 @@ export BOT_ID='your bot id'
 python bot.py
 ```
 
-### Run Tests
+### Run Test
 
 ```
 python -m pytest tests
