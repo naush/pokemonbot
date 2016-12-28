@@ -3,9 +3,6 @@ from unittest import mock
 
 from pokemonbot.commands import whois
 
-def test_whois_standard_response():
-    assert whois.respond('John', 'hello') == 'Do you want to know what kind of pokemon is John? Ask me *who is* John.'
-
 @mock.patch('random.choice')
 def test_whois_random_pokemon(mocked_random_choice):
     mocked_random_choice.return_value = 'pikachu'
