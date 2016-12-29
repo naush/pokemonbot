@@ -1,7 +1,6 @@
 import random
-import re
 
-COMMAND = "who is"
+COMMAND = "who’s that pokemon"
 
 POKEMONS = [
     "bulbasaur",
@@ -158,6 +157,19 @@ POKEMONS = [
     "riolu",
 ]
 
-def respond(user_name, user_input):
-    subject = user_input.split(COMMAND)[1]
-    return re.sub(r'\W+', '', subject) + " is a :pokemon-" + random.choice(POKEMONS) + ":!"
+QUESTIONS = [
+    'What type of pokemon is it?',
+    'What color is it?',
+]
+
+def respond(user_data, user_input):
+    if 'context' in user_data:
+        question_no = len(user_data['context'])
+    else:
+        question_no = 0
+
+    if question_no < len(QUESTIONS):
+        return QUESTIONS[question_no]
+    else:
+        # TODO: Skip guessed pokemons in context
+        return 'Is it a :pokemon-' + random.choice(POKEMONS) + ':?'

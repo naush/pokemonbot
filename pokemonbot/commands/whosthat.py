@@ -1,175 +1,33 @@
 import random
 
+from pokemonbot.database.interface import load, save
+
 COMMAND = "who’s that pokemon"
 
-POKEMONS = [
-  "bulbasaur",
-  "ivysaur",
-  "venusaur",
-  "charmander",
-  "charmeleon",
-  "charizard",
-  "squirtle",
-  "wartortle",
-  "blastoise",
-  "caterpie",
-  "metapod",
-  "butterfree",
-  "weedle",
-  "kakuna",
-  "beedrill",
-  "pidgey",
-  "pidgeotto",
-  "pidgeot",
-  "rattata",
-  "raticate",
-  "spearow",
-  "fearow",
-  "ekans",
-  "arbok",
-  "pikachu",
-  "raichu",
-  "sandshrew",
-  "sandslash",
-  "nidoranf",
-  "nidorina",
-  "nidoqueen",
-  "nidoranm",
-  "nidorino",
-  "nidoking",
-  "clefairy",
-  "clefable",
-  "vulpix",
-  "ninetales",
-  "jigglypuff",
-  "wigglytuff",
-  "zubat",
-  "golbat",
-  "oddish",
-  "gloom",
-  "vileplume",
-  "paras",
-  "parasect",
-  "venonat",
-  "venomoth",
-  "diglett",
-  "dugtrio",
-  "meowth",
-  "persian",
-  "psyduck",
-  "golduck",
-  "mankey",
-  "primeape",
-  "growlithe",
-  "arcanine",
-  "poliwag",
-  "poliwhirl",
-  "poliwrath",
-  "abra",
-  "kadabra",
-  "alakazam",
-  "machop",
-  "machoke",
-  "machamp",
-  "bellsprout",
-  "weepinbell",
-  "victreebel",
-  "tentacool",
-  "tentacruel",
-  "geodude",
-  "graveler",
-  "golem",
-  "ponyta",
-  "rapidash",
-  "slowpoke",
-  "slowbro",
-  "magnemite",
-  "magneton",
-  "farfetch",
-  "doduo",
-  "dodrio",
-  "seel",
-  "dewgong",
-  "grimer",
-  "muk",
-  "shellder",
-  "cloyster",
-  "gastly",
-  "haunter",
-  "gengar",
-  "onix",
-  "drowzee",
-  "hypno",
-  "krabby",
-  "kingler",
-  "voltorb",
-  "electrode",
-  "exeggcute",
-  "exeggutor",
-  "cubone",
-  "marowak",
-  "hitmonlee",
-  "hitmonchan",
-  "lickitung",
-  "koffing",
-  "weezing",
-  "rhyhorn",
-  "rhydon",
-  "chansey",
-  "tangela",
-  "kangaskhan",
-  "horsea",
-  "seadra",
-  "goldeen",
-  "seaking",
-  "staryu",
-  "starmie",
-  "mrmime",
-  "scyther",
-  "jynx",
-  "electabuzz",
-  "magmar",
-  "pinsir",
-  "tauros",
-  "magikarp",
-  "gyarados",
-  "lapras",
-  "ditto",
-  "eevee",
-  "vaporeon",
-  "jolteon",
-  "flareon",
-  "porygon",
-  "omanyte",
-  "omastar",
-  "kabuto",
-  "kabutops",
-  "aerodactyl",
-  "snorlax",
-  "articuno",
-  "zapdos",
-  "moltres",
-  "dratini",
-  "dragonair",
-  "dragonite",
-  "mewtwo",
-  "mew",
-  "riolu",
-]
+def respond(user_id, user_input):
+    response = 'Nope.'
 
-QUESTIONS = [
-    'What type of pokemon is it?',
-    'What color is it?',
-]
+    data = load('pokemonbot/database/pokemons.json')
+    pokemon_names = [pokemon['name'] for pokemon in data['pokemons']]
+    users = load('pokemonbot/database/users.json')
 
-def respond(user_data, command):
+    if user_id in users:
+        user_data = users[user_id]
+    else:
+        user_data = {}
+
     if 'context' in user_data:
-        question_no = len(user_data['context'])
+        pokemon = user_data['context']['pokemon']
+        if pokemon in user_input:
+            response = 'You got it!'
+            user_data = {}
     else:
-        question_no = 0
+        pokemon = random.choice(pokemon_names)
+        user_data['context'] = {'pokemon':pokemon}
+        user_data['command'] = COMMAND
+        response = 'Who is :pokemon-' + pokemon + ':?'
 
-    if question_no < len(QUESTIONS):
-        return QUESTIONS[question_no]
-    else:
-        # TODO: Skip guessed pokemons in context
-        return 'Is it a :pokemon-' + random.choice(POKEMONS) + ':?'
+    users[user_id] = user_data
+    save(users)
+
+    return response
